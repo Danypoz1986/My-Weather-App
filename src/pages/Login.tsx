@@ -12,6 +12,7 @@ import {
     InputCustomEvent,
     IonLoading,
     IonFooter,
+    IonToast,
   } from "@ionic/react";
 
 import { Link, useHistory } from "react-router-dom";
@@ -20,7 +21,7 @@ import { useState } from "react";
 import { setUserState } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
 import { User } from 'firebase/auth'
-import { ToastContainer,toast } from 'react-toastify';
+import { Slide, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'
   
   
@@ -44,6 +45,7 @@ import 'react-toastify/dist/ReactToastify.css'
             draggable: true,
             progress: undefined,
             theme: "colored",
+            transition: Slide
             });
     }
 
@@ -105,9 +107,6 @@ import 'react-toastify/dist/ReactToastify.css'
                    </IonCardContent>
                </IonCard>   
            </IonContent>
-           <IonFooter>
-           <ToastContainer/>
-           </IonFooter>
        </IonPage>
     );
     };
