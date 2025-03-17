@@ -30,3 +30,4 @@ yarn-error.log*
 
 # Optional eslint cache
 .eslintcache
+src/fir-app-34578-firebase-adminsdk-fbsvc-bb5dd0e389.json
