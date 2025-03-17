@@ -58,7 +58,7 @@ const Results: React.FC = () => {
     return (
         <IonPage>
             <IonHeader>
-                <IonToolbar style={{"--background":"#1e1e2f"}}>
+                <IonToolbar style={{"--background":"#1e1e2f", marginTop:"30px"}}>
                     <IonTitle style={{textAlign:"center", color:"#A0C4FF", height:"60px"}}>Weather in {weather?.name}, {weather?.sys.country}</IonTitle>
                 </IonToolbar>
             </IonHeader>

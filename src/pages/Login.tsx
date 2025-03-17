@@ -56,7 +56,7 @@ import { User } from 'firebase/auth'
     return (
        <IonPage>
            <IonHeader>
-               <IonToolbar style={{ "--background":"#1e1e2f" }}>
+               <IonToolbar style={{ "--background":"#1e1e2f", marginTop:"30px" }}>
                    <IonTitle style={{textAlign:"center", color:"#A0C4FF"}}>Login Page</IonTitle>
                </IonToolbar>
            </IonHeader>
