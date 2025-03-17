@@ -26,7 +26,7 @@ import { toast } from '../toast';
 import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-const apiKey = import.meta.env.APP_WEATHER_API_KEY
+const apiKey = import.meta.env.VITE_WEATHER_API_KEY
 
 const Dashboard: React.FC = () => {
 

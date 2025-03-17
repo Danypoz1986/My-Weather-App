@@ -6,7 +6,7 @@ import Lottie from 'lottie-react'
 import { getWeatherAnimation } from '../utils/getWeatherAnimation';
 
 
-const apiKey = import.meta.env.APP_WEATHER_API_KEY
+const apiKey = import.meta.env.VITE_WEATHER_API_KEY
 
 
 
