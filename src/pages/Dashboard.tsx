@@ -238,7 +238,7 @@ const Dashboard: React.FC = () => {
                     <IonItem style={{ width: "80%", maxWidth: "350px", "--background": "#1e1e2f", alignItems: "center", border: "2px solid #A0C4FF", borderRadius:"6px"  }}>
                         <IonIcon icon={searchOutline} slot="start" style={{ color: "#A0C4FF", marginRight:"10px" }} />
                         <IonInput 
-                            placeholder="Enter city name                                               (e.g., Rome or Rome, IT)"
+                            placeholder="Enter city name (e.g., Rome or Rome, IT)"
                             style={{ color: "#A0C4FF", paddingLeft: "8px", textAlign:"left", fontSize:"15px" }}
                             onIonChange={(e) => setCity(e.detail.value!)}
                         />
