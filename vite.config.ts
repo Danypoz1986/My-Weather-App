@@ -6,7 +6,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    envPrefix: 'APP_',
+    envPrefix: 'VITE_',
     define: {
       'import.meta.env': env,
     },
