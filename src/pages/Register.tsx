@@ -56,18 +56,34 @@ import { registerUser } from "../firebaseConfig"
                <IonLoading message="Registration in progress..." duration={0} isOpen={busy} />
                <IonCard style={{ backgroundColor: "#1e1e2f", marginTop:"30px" }}>
                    <IonCardContent>
-                       <IonItem style={{"--background":"#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
-                            <IonInput type="email" placeholder="Enter your email" 
-                            style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", margin:"0" }} required 
-                            onIonChange={(e: InputCustomEvent) => setEmail(e.detail.value || '')}
+                    <IonItem style={{ "--background": "#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
+                            <IonInput 
+                                type="email" 
+                                placeholder="Enter your email" 
+                                style={{ 
+                                    "--placeholder-color": "#A0C4FF",
+                                    "--color": "#A0C4FF",
+                                    "margin": "0",
+                                    "backgroundColor": "transparent" // Ensure no forced background color
+                                }}
+                                required 
+                                onIonChange={(e: InputCustomEvent) => setEmail(e.detail.value || '')}
                             />
-                       </IonItem>
-                       <br />
-                       <IonItem style={{"--background":"#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
-                            <IonInput type="password" placeholder="Create a password" required 
-                            style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", margin:"0" }}  
-                            onIonChange={(e: InputCustomEvent) => setPassword(e.detail.value || '')}
-                            />
+                        </IonItem>
+                        <br />
+                       <IonItem style={{ "--background": "#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
+                                <IonInput 
+                                    type="password" 
+                                    placeholder="Create a password" 
+                                    required 
+                                    style={{ 
+                                        "--placeholder-color": "#A0C4FF",
+                                        "--color": "#A0C4FF",
+                                        "margin": "0",
+                                        "backgroundColor": "transparent" // Ensure no forced background color
+                                    }}  
+                                    onIonChange={(e: InputCustomEvent) => setPassword(e.detail.value || '')}
+                                />
                        </IonItem>
                        <br />
                        <IonItem style={{"--background":"#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
