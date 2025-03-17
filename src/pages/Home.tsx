@@ -9,6 +9,8 @@ import { IonContent,
 
 import { cloud } from 'ionicons/icons'
 import { useHistory } from 'react-router';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
 
 const Home: React.FC = () => {
 
@@ -37,6 +39,7 @@ const Home: React.FC = () => {
           <IonButton color="secondary" onClick={toRegister}>Register</IonButton>
         </div>
       </IonContent>
+      <ToastContainer />
     </IonPage>
   );
 };

@@ -11,6 +11,7 @@ import {
     IonCardContent,
     InputCustomEvent,
     IonLoading,
+    IonFooter,
   } from "@ionic/react";
 
 import { Link, useHistory } from "react-router-dom";
@@ -33,6 +34,18 @@ import 'react-toastify/dist/ReactToastify.css'
     const history = useHistory();
     const [hover, setHover] = useState(false);
 
+    const notify = () => {
+        toast.success('Mannaggia a gesu cristo', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            });
+    }
 
 
     async function login() {
@@ -63,7 +76,6 @@ import 'react-toastify/dist/ReactToastify.css'
            </IonHeader>
            <IonContent className="ion-padding">
                <IonLoading message="Logging in..." duration={0} isOpen={busy} />
-               <ToastContainer/>
                <IonCard style={{ backgroundColor: "#1e1e2f", marginTop:"30px" }}>
                    <IonCardContent>
                        <IonItem style={{"--background":"#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
@@ -80,7 +92,7 @@ import 'react-toastify/dist/ReactToastify.css'
                             />
                        </IonItem>
                        <br /> <br />
-                       <IonButton expand="full" color="primary" onClick={login}>
+                       <IonButton expand="full" color="primary" onClick={() => { login(); notify(); }}>
                         <p style={{color:"#1e1e2f"}}>LOGIN</p></IonButton>
                        <br />
                        <p style={{textAlign:"center"}}>Don't have an account yet?&nbsp; &nbsp;<Link to = "/register">Register Now!</Link></p>
@@ -93,6 +105,9 @@ import 'react-toastify/dist/ReactToastify.css'
                    </IonCardContent>
                </IonCard>   
            </IonContent>
+           <IonFooter>
+           <ToastContainer/>
+           </IonFooter>
        </IonPage>
     );
     };
