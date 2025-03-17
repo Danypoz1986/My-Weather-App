@@ -2,7 +2,7 @@ export async function toast(message: string, color: 'success' | 'warning' | 'dan
   const toast = document.createElement('ion-toast') as HTMLIonToastElement;
   toast.message = message;
   toast.duration = duration;
-  toast.position = "bottom";
+  toast.style.top = "100px";
   toast.color = color;
   toast.buttons = [{ text: 'OK', role: 'cancel' }];
   toast.style.zIndex = '9999'; // Ensure it appears above everything else
