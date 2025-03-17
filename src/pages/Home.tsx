@@ -1,22 +1,41 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Home.css';
+import { IonContent, 
+         IonHeader, 
+         IonIcon, 
+         IonPage, 
+         IonTitle,
+         IonToolbar, 
+         IonButton} from '@ionic/react';
+
+
+import { cloud } from 'ionicons/icons'
+import { useHistory } from 'react-router';
 
 const Home: React.FC = () => {
+
+  const history = useHistory();
+
+  const toLogin = () => {
+    history.push('/login');
+  }
+
+  const toRegister = () => {
+    history.push('/register');
+  }
+
+
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
-          <IonTitle>Blank</IonTitle>
+        <IonToolbar style={{ "--background": "#1e1e2f", textAlign:"center", height:"150px", "justify-content":"center", display:"flex" }}>
+          <IonTitle style={{color:"#A0C4FF", fontSize:"40px"}}>My Weather App <IonIcon icon={cloud} style={{ verticalAlign: "middle" }}  /> </IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer />
+        <div style={{marginTop:"150px", textAlign:"center"}}>
+          <IonButton onClick={toLogin}>LOGIN</IonButton>
+          <p style={{color:"#A0C4FF"}}>OR</p>
+          <IonButton color="secondary" onClick={toRegister}>Register</IonButton>
+        </div>
       </IonContent>
     </IonPage>
   );
