@@ -16,10 +16,11 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import {loginUser} from '../firebaseConfig'
 import { useState } from "react";
-import { toast } from "../toast";
 import { setUserState } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
 import { User } from 'firebase/auth'
+import { ToastContainer,toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'
   
   
   
@@ -43,11 +44,11 @@ import { User } from 'firebase/auth'
             if (user && user.email) {
                 dispatch(setUserState(user.email));
                 history.replace('/dashboard');
-                toast('You have logged in!', 'success', 4000);
+                toast("you ve logged in")
             } 
         } catch (error) {
             console.error("Login error:", error);
-            toast("Login failed!", 'danger', 4000);
+            toast("Login failed!");
             setBusy(false);
         }
     }
@@ -62,6 +63,7 @@ import { User } from 'firebase/auth'
            </IonHeader>
            <IonContent className="ion-padding">
                <IonLoading message="Logging in..." duration={0} isOpen={busy} />
+               <ToastContainer/>
                <IonCard style={{ backgroundColor: "#1e1e2f", marginTop:"30px" }}>
                    <IonCardContent>
                        <IonItem style={{"--background":"#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>

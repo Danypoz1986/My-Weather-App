@@ -36,7 +36,6 @@ import { getCurrentUser } from './firebaseConfig';  // Ensure this is correctly 
 import { useDispatch } from 'react-redux';
 import { setUserState } from "./redux/userSlice";
 import { User } from "firebase/auth"; // ✅ Use Firebase's User type
-import { toast } from "./toast";
 
 setupIonicReact();
 
@@ -64,9 +63,7 @@ const App: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.toast = toast;
-    }
+
     getCurrentUser()
       .then((user: User | null) => {
         if (user?.email) {
@@ -83,11 +80,6 @@ const App: React.FC = () => {
       });
   }, [dispatch]);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.toast = toast;  // ✅ This will now be recognized by TypeScript
-    }
-  }, []);
 
   return (
     <IonApp>
