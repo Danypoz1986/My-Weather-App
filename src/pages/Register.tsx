@@ -13,7 +13,7 @@ import {
     IonLoading,
   } from "@ionic/react";
 
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { toast } from "../toast"
 import { useState } from "react";
 import { registerUser } from "../firebaseConfig"
@@ -25,6 +25,7 @@ import { registerUser } from "../firebaseConfig"
     const [cpassword, setCpassword] = useState('');
     const [busy, setBusy] = useState<boolean>(false)
     const [hover, setHover] = useState(false);
+    const history = useHistory();
 
     async function register(){
         setBusy(true)
@@ -35,10 +36,11 @@ import { registerUser } from "../firebaseConfig"
             toast('Username and password are required', 'warning', 4000)
         }
         const res = await registerUser(email, password)
-        setBusy(false)
         if(res){
             toast("You have registered successfully!", 'success', 4000)
+            history.push('/')
         }
+        setBusy(false)
     } 
 
     return (
