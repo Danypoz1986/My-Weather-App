@@ -31,9 +31,11 @@ import { registerUser } from "../firebaseConfig"
         setBusy(true)
         if(password !== cpassword){
             toast('Passwords do not match', 'warning', 4000)
+            return
         }
         if(email.trim() === '' || password.trim() === '' ){
             toast('Username and password are required', 'warning', 4000)
+            return
         }
         const res = await registerUser(email, password)
         if(res){
