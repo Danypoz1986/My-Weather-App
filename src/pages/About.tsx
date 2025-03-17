@@ -6,7 +6,7 @@ const About: React.FC = () => {
     return (
         <IonPage>
             <IonHeader>
-                <IonToolbar style={{ "--background": "#1e1e2f", color: "#A0C4FF", textAlign:"center", marginTop:"30px" }}>
+                <IonToolbar style={{ "--background": "#1e1e2f", color: "#A0C4FF", textAlign:"center" }}>
                     <IonTitle>About</IonTitle>
                 </IonToolbar>
             </IonHeader>

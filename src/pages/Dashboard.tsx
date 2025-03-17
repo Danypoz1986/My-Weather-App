@@ -200,7 +200,7 @@ const Dashboard: React.FC = () => {
     return (
         <IonPage>
             <IonHeader>
-                <IonToolbar style={{"--background":"#1e1e2f", color:"#A0C4FF", marginTop:"30px"}}>
+                <IonToolbar style={{"--background":"#1e1e2f", color:"#A0C4FF"}}>
                 <IonItem 
                     lines="none" 
                     style={{"--background":"#1e1e2f"}}
