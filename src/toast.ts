@@ -1,44 +1,27 @@
-import { getPlatforms } from '@ionic/react';
-
-export function toast(
-  message: string,
-  color: 'success' | 'warning' | 'danger' | 'primary',
-  duration = 2000
-) {
-  const toast = document.createElement('ion-toast');
-
+export async function toast(message: string, color: 'success' | 'warning' | 'danger' | 'primary', duration = 2000) {
+  const toast = document.createElement('ion-toast') as HTMLIonToastElement;
   toast.message = message;
   toast.duration = duration;
   toast.position = "top";
   toast.color = color;
+  toast.buttons = [{ text: 'OK', role: 'cancel' }];
+  toast.style.zIndex = '9999'; // Ensure it appears above everything else
 
-  // ✅ Dynamically set the mode based on platform
-  const platforms = getPlatforms();
-  if (platforms.includes("ios")) {
-    toast.setAttribute("mode", "ios"); // iOS-style
-  } else {
-    toast.setAttribute("mode", "md"); // Android-style (Material Design)
+  document.body.appendChild(toast);  // ✅ Append to the body
+
+  console.log("Toast Element Created:", toast); // ✅ Debugging log
+
+  // ✅ Wait for the toast to be fully initialized before presenting
+  try {
+    await toast.present();  // ✅ Ensure `present()` is awaited
+    console.log("Toast presented successfully.");
+  } catch (error) {
+    console.error("Toast failed to present:", error);
   }
 
-  toast.setAttribute("animated", "true"); // Enable animation
-  toast.setAttribute("buttons", JSON.stringify([{ text: "OK", role: "cancel" }])); // Close button
-  toast.setAttribute("style", "z-index: 9999;"); // Ensure it's visible above other elements
-
-  document.body.appendChild(toast); // Append to body
-
-  console.log("Toast Element:", toast); // Debugging
-
-  setTimeout(async () => {
-    console.log("Presenting toast...");
-    try {
-      await (toast as HTMLIonToastElement).present(); // ✅ Ensure `present()` is awaited
-    } catch (error) {
-      console.error("Toast failed to present:", error);
-    }
-  }, 100);
-
-  toast.addEventListener("didDismiss", () => {
-    console.log("Toast dismissed");
+  // ✅ Remove toast after dismissal to prevent memory leaks
+  toast.addEventListener('didDismiss', () => {
+    console.log("Toast dismissed.");
     toast.remove();
   });
 
