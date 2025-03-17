@@ -4,17 +4,20 @@ export function toast(message: string, color: 'success' | 'warning' | 'danger' |
   toast.duration = duration;
   toast.position = "top";
   toast.color = color;
+  toast.style.display = 'block';
 
+  document.body.appendChild(toast);  // ✅ Append to the body
 
-  document.body.appendChild(toast);
+  console.log("Toast Element:", toast);
 
+  // ✅ Wait for a short delay before presenting
   setTimeout(() => {
-      toast.present();
+    toast.present();  // ✅ Ensure it's displayed
   }, 10);
 
-  // Remove toast after it disappears to prevent memory leaks
+  // ✅ Remove toast after dismissal to prevent memory leaks
   toast.addEventListener('didDismiss', () => {
-      toast.remove();
+    toast.remove();
   });
 
   return toast;
