@@ -3,11 +3,13 @@ import userReducer from "./userSlice";
 import authReducer, { setUser } from "./authSlice";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useDispatch } from "react-redux";
+import historyReducer from "./historySlice";
 
 const store = configureStore({
     reducer: {
         user: userReducer, 
         auth: authReducer,
+        history: historyReducer
     },
     devTools: process.env.NODE_ENV !== "production",
 });
@@ -15,12 +17,14 @@ const store = configureStore({
 // ✅ Listen for Firebase Auth changes & update Redux state
 const auth = getAuth();
 onAuthStateChanged(auth, (user) => {
-    if (user) {
-        store.dispatch(setUser(user.uid)); // ✅ Set userId in Redux
-    } else {
-        store.dispatch(setUser(null)); // ✅ Clear userId in Redux
+    const currentUserId = store.getState().auth.userId;
+    if (user && user.uid !== currentUserId) {
+        store.dispatch(setUser(user.uid)); // ✅ Update only if changed
+    } else if (!user && currentUserId !== null) {
+        store.dispatch(setUser(null)); // ✅ Avoid redundant logout calls
     }
 });
+
 
 // ✅ Properly typed RootState and Dispatch
 export type RootState = ReturnType<typeof store.getState>;

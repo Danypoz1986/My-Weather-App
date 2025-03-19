@@ -1,9 +1,11 @@
 import { IonButton, IonList, IonContent, IonHeader, IonLoading, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { toast } from '../toast';
 import Lottie from 'lottie-react'
 import { getWeatherAnimation } from '../utils/getWeatherAnimation';
+import { toast, Toaster} from 'sonner';
+
+
 
 
 const apiKey = import.meta.env.VITE_WEATHER_API_KEY
@@ -42,10 +44,16 @@ const Results: React.FC = () => {
             }catch (err: unknown){
                 if(err instanceof Error){
                     setError(err.message)
-                    toast(err.message, 'danger', 4000);
+                    toast.error(err.message, {
+                        position: "top-center",
+                        duration: 4000,
+                    });
                 }else{
                     setError("An unknown error occurred")
-                    toast("An unknown error occurred", 'danger', 4000);
+                    toast.error("An unknown error occurred", {
+                        position: "top-center",
+                        duration: 4000
+                    });
                 }
             }finally{
                 setLoading(false);
@@ -57,6 +65,7 @@ const Results: React.FC = () => {
 
     return (
         <IonPage>
+            <Toaster richColors />
             <IonHeader>
                 <IonToolbar style={{"--background":"#1e1e2f"}}>
                     <IonTitle style={{textAlign:"center", color:"#A0C4FF", height:"60px"}}>Weather in {weather?.name}, {weather?.sys.country}</IonTitle>

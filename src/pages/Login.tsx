@@ -11,17 +11,16 @@ import {
     IonCardContent,
     InputCustomEvent,
     IonLoading,
-    IonFooter,
-    IonToast,
+  
   } from "@ionic/react";
 
 import { Link, useHistory } from "react-router-dom";
 import {loginUser} from '../firebaseConfig'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { setUserState } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
 import { User } from 'firebase/auth'
-import { Slide, ToastContainer, toast } from 'react-toastify';
+import { toast, Toaster } from 'sonner';
 import 'react-toastify/dist/ReactToastify.css'
   
   
@@ -35,20 +34,6 @@ import 'react-toastify/dist/ReactToastify.css'
     const history = useHistory();
     const [hover, setHover] = useState(false);
 
-    const notify = () => {
-        toast.success('Mannaggia a gesu cristo', {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Slide
-            });
-    }
-
 
     async function login() {
         setBusy(true);
@@ -56,18 +41,53 @@ import 'react-toastify/dist/ReactToastify.css'
             const user: User | null = await loginUser(email, password);
             setBusy(false);
     
-            if (user && user.email) {
-                dispatch(setUserState(user.email));
-                history.replace('/dashboard');
-                toast("you ve logged in")
-            } 
+            if (!user || !user.email) {
+                const errorMessage = localStorage.getItem("showLoginErrorsToast");
+                if (errorMessage) {
+                    toast.error(errorMessage, {
+                        position: "top-center",
+                        duration: 4000,
+                    });
+    
+                    setTimeout(() => {
+                        localStorage.removeItem("showLoginErrorsToast"); // ✅ Remove error after timeout
+                    }, 4000);
+                }
+                return; // ✅ Prevents redirecting on failed login
+            }
+    
+            // ✅ Only proceed if the user is authenticated
+            dispatch(setUserState(user.email));
+            localStorage.setItem("showLoginToast", "true");
+            history.replace('/dashboard');
+    
         } catch (error) {
             console.error("Login error:", error);
-            toast("Login failed!");
             setBusy(false);
         }
     }
     
+
+    useEffect(() => {
+        const errorMessage = localStorage.getItem("showLoginErrorsToast");
+        if (errorMessage) {
+            console.log(errorMessage?.length)
+            toast.error(errorMessage, {
+                position: "top-center",
+                duration: 4000, // ✅ Toast disappears after 4s
+            });
+    
+            // ✅ Remove the error message from localStorage after delay
+            setTimeout(() => {
+                localStorage.removeItem("showLoginErrorsToast");
+            }, 4000); // 4.5s delay ensures the toast disappears first
+        }
+    }, []);
+
+    
+    
+    
+
     
     return (
        <IonPage>
@@ -79,6 +99,7 @@ import 'react-toastify/dist/ReactToastify.css'
            <IonContent className="ion-padding">
                <IonLoading message="Logging in..." duration={0} isOpen={busy} />
                <IonCard style={{ backgroundColor: "#1e1e2f", marginTop:"30px" }}>
+                <Toaster  richColors/>
                    <IonCardContent>
                        <IonItem style={{"--background":"#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
                             <IonInput type="email" placeholder="Enter your email" 
@@ -94,13 +115,13 @@ import 'react-toastify/dist/ReactToastify.css'
                             />
                        </IonItem>
                        <br /> <br />
-                       <IonButton expand="full" color="primary" onClick={() => { login(); notify(); }}>
+                       <IonButton expand="full" color="primary" onClick={login}>
                         <p style={{color:"#1e1e2f"}}>LOGIN</p></IonButton>
                        <br />
                        <p style={{textAlign:"center"}}>Don't have an account yet?&nbsp; &nbsp;<Link to = "/register">Register Now!</Link></p>
                        <p style={{textAlign:"center", marginTop:"50px"}}><Link to = "/Home" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} 
                        style={{textDecoration: "none", 
-                        color: "white", 
+                        color: "#A0C4FF", 
                         display: "inline-block", 
                         transform: hover ? "scale(1.1)" : "scale(1)", 
                         transition: "transform 0.2s ease-in-out" }}>🏠 Home</Link></p>

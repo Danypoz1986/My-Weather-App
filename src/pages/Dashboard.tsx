@@ -14,7 +14,7 @@ import { IonContent,
          IonModal,
          IonLabel,
          IonList,
-         IonPopover} from '@ionic/react';
+         IonPopover,} from '@ionic/react';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from "../redux/store";
@@ -22,9 +22,11 @@ import { useHistory, useLocation } from 'react-router';
 import { logoutUser, db, deleteUserData, deleteCurrentUser } from '../firebaseConfig';
 import { searchOutline, timeOutline, informationCircleOutline, chevronDownOutline } from 'ionicons/icons';
 import { setSearchType } from "../redux/userSlice";
-import { toast } from '../toast';
 import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { addToHistory } from '../redux/historySlice';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { toast, Toaster } from 'sonner';
+
 
 const apiKey = import.meta.env.VITE_WEATHER_API_KEY
 
@@ -44,12 +46,21 @@ const Dashboard: React.FC = () => {
     const [popoverEvent, setPopoverEvent] = useState<MouseEvent | undefined>(undefined);
     const [deleting, setDeleting] = useState<boolean>(false);
 
+
     const logout = useCallback(async () => {
         setBusy(true);
-        await logoutUser();
+        
+        // ✅ Pass dispatch as argument
+        await logoutUser(dispatch); 
+        
+        localStorage.setItem("showLogoutToast", "true"); // ✅ Set flag for Home page
+        
         setBusy(false);
         history.replace('/');
-    }, [history]);
+    }, [history, dispatch]);
+    
+    
+      
 
     async function deleteUser(){
         const userResponse = confirm("Are you sure to delete the account?");
@@ -62,55 +73,84 @@ const Dashboard: React.FC = () => {
             history.replace("/");
             }catch (error){
                 if(error instanceof Error){
-                toast(error.message, 'danger', 4000);
+                //toast error
                 }else 
-                toast("An unknown error occurred", 'danger', 4000)
+                {
+                    //toast error
+                }
+
         }
     }   setDeleting(false);
         }
     }
+
     const getWeather = async () => {
-        if (city.trim() !== '') {
-            try {
-                const res = await fetch(
-                    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
-                );
-                if (!res.ok) throw new Error("Failed to fetch location data!");
-                
-                const data = await res.json();
-                const country = data.sys?.country || "Unknown"; // Extract country
-
-
-                console.log(city)
+        if (city.trim() === '') {
+            toast.info("Please enter a city name before searching!", {
+                position: "top-center",
+                duration: 4000,
+            });
+            return;
+        }
     
-                if (userId) {
-                    const userRef = doc(db, "userHistory", userId); // User document reference
+        try {
+            const res = await fetch(
+                `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+            );
     
-                    const userSnap = await getDoc(userRef);
-                    if (userSnap.exists()) {
-                        // If user document exists, update the history
-                        await updateDoc(userRef, {
-                            searches: arrayUnion({ city, country, timestamp: Date.now() }),
-                        });
-                    } else {
-                        // If user document does not exist, create new one
-                        await setDoc(userRef, {
-                            searches: [{ city, country, timestamp: Date.now() }],
-                        });
-                    }
+            if (!res.ok) throw new Error("Failed to fetch location data!");
+    
+            const data = await res.json();
+            const country = data.sys?.country || "Unknown";
+    
+            if (userId) {
+                const userRef = doc(db, "userHistory", userId);
+                const userSnap = await getDoc(userRef);
+    
+                const searchEntry = { city, country, timestamp: Date.now() };
+    
+                if (userSnap.exists()) {
+                    await updateDoc(userRef, {
+                        searches: arrayUnion(searchEntry),
+                    });
+                } else {
+                    await setDoc(userRef, {
+                        searches: [searchEntry],
+                    });
                 }
     
-                // Navigate to results page
-                history.push(`/results/${city}`);
-    
-            } catch (error) {
-                console.error("Error fetching country:", error);
-                toast("Could not fetch country data.", "danger", 4000);
+                dispatch(addToHistory(searchEntry)); // ✅ Update Redux instantly
             }
-        } else {
-            toast("Please enter a city name before searching.", "warning", 4000);
+    
+            // Navigate to results page
+            history.push(`/results/${city}`);
+        } catch (error) {
+            console.error("Error fetching country:", error);
+            toast.error("Could not fetch weather data.", {
+                position: "top-center",
+                duration: 4000,
+            });
         }
     };
+    
+    
+    useEffect(() => {
+    
+        if (localStorage.getItem("showLoginToast") === "true") {
+            const loginToastId = toast.success("You've logged in!", {
+                position: "top-center",
+                duration: 4000,
+            })
+    
+            // ✅ Remove login toast flag after delay and dismiss toast
+            setTimeout(() => {
+                localStorage.removeItem("showLoginToast");
+                toast.dismiss(loginToastId); // ✅ Force toast to disappear
+            }, 50);
+        }
+    }, []);
+    
+    
 
 
     useEffect(() => {
@@ -125,7 +165,7 @@ const Dashboard: React.FC = () => {
                 }, 10 * 60 * 1000); // 10 minutes in milliseconds
             }
         };
-    
+
         // Events that reset the timer
         const events = ["mousemove", "keydown", "touchstart"];
     
@@ -197,8 +237,12 @@ const Dashboard: React.FC = () => {
         setShowModal(false);
     }, [location] )
 
+    
+        
+
     return (
         <IonPage>
+            <Toaster richColors />
             <IonHeader>
                 <IonToolbar style={{"--background":"#1e1e2f", color:"#A0C4FF"}}>
                 <IonItem 
@@ -227,7 +271,7 @@ const Dashboard: React.FC = () => {
             >
                 <IonList lines='none' style={{background:"#1e1e2f"}}>
                     <IonItem onClick={() => deleteUser()} style={{"--background": "#1e1e2f"}}>
-                        <IonLabel style={{ color:"#A0C4FF"}} ><span style={{"cursor":"pointer"}}>🗑️ Delete User</span></IonLabel>
+                        <IonLabel style={{ color:"#A0C4FF"}} ><span style={{"cursor":"pointer"}}>🗑️ Delete account</span></IonLabel>
                     </IonItem>
                 </IonList>
             </IonPopover>

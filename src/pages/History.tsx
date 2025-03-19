@@ -1,85 +1,81 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { IonContent, IonHeader, IonItem, IonList, IonPage, IonTitle, IonToolbar, IonButton } from "@ionic/react";
-import { doc, getDoc, deleteField, updateDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig"; // ✅ Import Firestore DB
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store"; // ✅ Get logged-in user
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import { X } from "lucide-react";
+import { useHistory } from "react-router";
+import { fetchHistory, deleteSearchHistory, clearUserHistory } from "../historyFunctions";
 
 const History: React.FC = () => {
-    const [searchHistory, setSearchHistory] = useState<{ city: string; country: string }[]>([]);
-    const userId = useSelector((state: RootState) => state.auth.userId); // ✅ Get logged-in user
-
-
-    const clearHistory = async () => {
-        if (userId) {
-            const userRef = doc(db, "userHistory", userId);
-            await updateDoc(userRef, {
-                searches: deleteField(), // Deletes search history
-            });
-            setSearchHistory([]); // Clear from UI
-        }
-    };
+    const searchHistory = useSelector((state: RootState) => state.history.searches);
+    const userId = useSelector((state: RootState) => state.auth.userId);
+    const dispatch = useDispatch();
+    const history = useHistory();
 
     useEffect(() => {
-        if (!userId) return;  // Ensure user is logged in
-    
-        const fetchHistory = async () => {
-            try {
-                const userRef = doc(db, "userHistory", userId);
-                const docSnap = await getDoc(userRef);
-    
-                if (docSnap.exists()) {
-                    console.log("Fetched history data:", docSnap.data());
-                    setSearchHistory(docSnap.data().searches || []);
-                } else {
-                    console.log("No history found for user.");
-                    setSearchHistory([]);
-                }
-            } catch (error) {
-                console.error("Error fetching history:", error);
-            }
-        };
-    
-        fetchHistory();
-    }, [userId]);  // Runs when userId is available
-    
+        if (userId) {
+            fetchHistory(userId, dispatch);
+        }
+    }, [userId, dispatch, history]);
 
     return (
         <IonPage>
             <IonHeader>
-                <IonToolbar style={{textAlign:"center", "--background":"#1e1e2f", color:"#A0C4FF"}}>
+                <IonToolbar style={{ textAlign: "center", "--background": "#1e1e2f", color: "#A0C4FF" }}>
                     <IonTitle>Search History</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
                 {searchHistory.length === 0 ? (
-                    <p>No search history available.</p>
+                    <p style={{"color":"#A0C4FF"}}>No search history available.</p>
                 ) : (
-                    <IonList style={{marginTop:"30px", background:"#1e1e2f"}}>
+                    <IonList style={{ marginTop: "30px", background: "#1e1e2f" }}>
                         {searchHistory.map((entry, index) => (
-                            <IonItem key={index} routerLink={`/results/${entry.city}`}
-                                style={{"--background":"#1e1e2f", "--border-color":"#A0C4FF", "--color":"#A0C4FF", "--background-hover":"none"}}>
-                                {entry.city 
+                            <IonItem 
+                                key={index} 
+                                style={{
+                                    "--background": "#1e1e2f",
+                                    "--border-color": "#A0C4FF",
+                                    "--color": "#A0C4FF",
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}
+                            >
+                                <span 
+                                    style={{ cursor: "pointer", color: "#A0C4FF", textDecoration: "none" }}
+                                    onClick={() => history.push(`/results/${entry.city}`)}
+                                >
+                                    {entry.city 
                                     ? entry.city.split(",")[0].trim().split(" ").map(word => word.charAt(0).toUpperCase() + 
                                     word.slice(1).toLowerCase()).join(" ") 
                                     : "Unknown City"}, {entry.country}
+                                </span>
+
+                                <X 
+                                    color="red" 
+                                    size={20} 
+                                    style={{ cursor: "pointer", marginLeft: "auto" }}
+                                    onClick={() => deleteSearchHistory(userId!, entry, dispatch)} // ✅ Use Redux functions
+                                />
                             </IonItem>
                         ))}
-                <div style={{textAlign:"center", marginTop:"10px"}}>
-                    <IonButton color="danger" onClick={clearHistory} style={{"font-weight":"bold"}}>
-                        Clear History
-                    </IonButton>
-                </div>                
+                        <div style={{ textAlign: "center", marginTop: "10px" }}>
+                            <IonButton color="danger" onClick={() => clearUserHistory(userId!, dispatch)} style={{ fontWeight: "bold" }}>
+                                Clear History
+                            </IonButton>
+                        </div>
                     </IonList>
                 )}
             </IonContent>
             <div style={{ textAlign: "center", marginTop: "10px" }}>
-                    <IonButton routerLink="/dashboard" style={{"--border-radius":"6px", "font-weight":"bold"}}>
-                        Back to Dashboard
-                    </IonButton>
-            </div>
+                                <IonButton routerLink="/dashboard" style={{"--border-radius":"6px", "font-weight":"bold"}}>
+                                    Back to Dashboard
+                                </IonButton>
+                            </div>
         </IonPage>
     );
 };
 
 export default History;
+

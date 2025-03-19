@@ -1,27 +1,44 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getAuth, deleteUser } from "firebase/auth";
 
+
 interface AuthState {
   userId: string | null;
+  logoutMessage: boolean;
 }
 
 const initialState: AuthState = {
   userId: null,
+  logoutMessage: false
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // ✅ Set the user ID when they log in
+    // ✅ Set the user ID when logging in
     setUser: (state, action: PayloadAction<string | null>) => {
       state.userId = action.payload;
+      if (!action.payload) {
+        state.logoutMessage = true; // ✅ Show logout message when user logs out
+      }
     },
 
-    // ✅ Logout user (clears the user ID)
-    logoutUser: (state) => {
-      state.userId = null;
+    // ✅ Clears the logout message after displaying it
+    clearLogoutMessage: (state) => {
+      state.logoutMessage = false;
     },
+
+    // ✅ Logout user (clears the user ID and shows logout message)
+
+    logoutUser: (state) => {
+      if (state.userId !== null) {
+        state.userId = null;
+        state.logoutMessage = true;
+      }
+    },
+    
+  
 
     // ✅ Delete user account (calls Firebase + clears state)
     deleteUserAccount: (state) => {
@@ -46,5 +63,5 @@ const authSlice = createSlice({
 });
 
 // ✅ Export actions for use in components
-export const { setUser, logoutUser, deleteUserAccount } = authSlice.actions;
+export const { setUser, logoutUser, deleteUserAccount, clearLogoutMessage } = authSlice.actions;
 export default authSlice.reducer;
