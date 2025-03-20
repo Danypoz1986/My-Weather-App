@@ -148,14 +148,15 @@ useEffect(() => {
         if (userId) {
             console.log("⏳ Resetting inactivity timer...");
             clearTimeout(inactivityTimer);
-            localStorage.setItem("lastActivity", Date.now().toString());
+            const now = Date.now();
+            localStorage.setItem("lastActivity", now.toString()); // ✅ Store last activity timestamp
 
             inactivityTimer = setTimeout(() => {
                 if (!localStorage.getItem("logoutType")) { 
                     console.log("🚪 Auto-logout due to inactivity.");
                     logout("auto"); 
                 }
-            },  10 /* minutes */ * 60 * 1000 ); // 10 minutes
+            }, 10 /* <-- minutes */  * 60 * 1000); 
         }
     };
 
