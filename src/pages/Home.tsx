@@ -1,10 +1,10 @@
 import { IonContent, 
-         IonHeader, 
-         IonIcon, 
-         IonPage, 
-         IonTitle,
-         IonToolbar, 
-         IonButton} from '@ionic/react';
+  IonHeader, 
+  IonIcon, 
+  IonPage, 
+  IonTitle,
+  IonToolbar, 
+  IonButton} from '@ionic/react';
 
 
 import { cloud } from 'ionicons/icons'
@@ -20,66 +20,80 @@ import { clearLogoutMessage } from "../redux/authSlice";
 
 const Home: React.FC = () => {
 
-  const history = useHistory();
-  const showRegisterToast = useSelector((state: RootState) => state.user.showRegisterToast);
-  const dispatch = useDispatch();
-  const logoutMessage = useSelector((state: RootState) => state.auth.logoutMessage);
-  
+const history = useHistory();
+const showRegisterToast = useSelector((state: RootState) => state.user.showRegisterToast);
+const dispatch = useDispatch();
+const logoutMessage = useSelector((state: RootState) => state.auth.logoutMessage);
 
-  const toLogin = () => {
-    history.push('/login');
-  }
 
-  const toRegister = () => {
-    history.push('/register');
-  }
+const toLogin = () => {
+history.push('/login');
+}
 
-  
-  useEffect(() => {
-    if (showRegisterToast) {
-        toast.success("You have registered successfully!", {
-          position: "top-center",
-          duration: 4000,
-        })
-            dispatch(setShowRegisterToast(false)); // ✅ Reset Redux state
-    }
-}, [showRegisterToast, dispatch]);
+const toRegister = () => {
+history.push('/register');
+}
+
 
 useEffect(() => {
-  if (logoutMessage) {
+if (showRegisterToast) {
+ toast.success("You have registered successfully!", {
+   position: "top-center",
+   duration: 4000,
+ })
+     dispatch(setShowRegisterToast(false)); // ✅ Reset Redux state
+}
+}, [showRegisterToast, dispatch]);
+
+
+useEffect(() => {
+  const logoutType = localStorage.getItem("logoutType");
+
+  if (!logoutType) return; // ✅ No logoutType, no toast
+
+  console.log(`🔄 Detected logoutType: ${logoutType}`);
+
+  if (logoutType === "voluntary") {
       toast.success("You've logged out successfully!", {
           position: "top-center",
           duration: 4000,
+          id: "logout-toast", // ✅ Prevent multiple toasts
       });
-      setTimeout(() => {
-      dispatch(clearLogoutMessage());
-     },50) // ✅ Clear the message after displaying it
+  } else if (logoutType === "auto") {
+      toast.info("Session expired due to inactivity. You have been logged out!", {
+          position: "top-center",
+          duration: 4000,
+          id: "logout-toast", // ✅ Prevent multiple toasts
+      });
   }
-}, [logoutMessage, dispatch]);
+
+  // ✅ Remove logoutType *immediately* after toast is set
+  localStorage.removeItem("logoutType");
+
+}, [history.location.state]); // ✅ Uses `history.location.state` to trigger only when needed
 
 
 
 
 
-
-  return (
-    <IonPage>
-      <Toaster richColors
-      />
-      <IonHeader>
-        <IonToolbar style={{ "--background": "#1e1e2f", textAlign:"center", height:"150px", "justify-content":"center", display:"flex" }}>
-          <IonTitle style={{color:"#A0C4FF", fontSize:"40px"}}>My Weather App <IonIcon icon={cloud} style={{ verticalAlign: "middle" }}  /> </IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent fullscreen>
-        <div style={{marginTop:"150px", textAlign:"center"}}>
-          <IonButton onClick={toLogin}><b style={{color:"#1e1e2f"}}>LOGIN</b></IonButton>
-          <p style={{color:"#A0C4FF"}}>OR</p>
-          <IonButton color="secondary" onClick={toRegister}><b style={{color:"#1e1e2f"}}>Register</b></IonButton>
-        </div>
-      </IonContent>
-    </IonPage>
-  );
+return (
+<IonPage>
+<Toaster richColors
+/>
+<IonHeader>
+ <IonToolbar style={{ "--background": "#1e1e2f", textAlign:"center", height:"150px", "justify-content":"center", display:"flex" }}>
+   <IonTitle style={{color:"#A0C4FF", fontSize:"40px"}}>My Weather App <IonIcon icon={cloud} style={{ verticalAlign: "middle" }}  /> </IonTitle>
+ </IonToolbar>
+</IonHeader>
+<IonContent fullscreen>
+ <div style={{marginTop:"150px", textAlign:"center"}}>
+   <IonButton onClick={toLogin}><b style={{color:"#1e1e2f"}}>LOGIN</b></IonButton>
+   <p style={{color:"#A0C4FF"}}>OR</p>
+   <IonButton color="secondary" onClick={toRegister}><b style={{color:"#1e1e2f"}}>Register</b></IonButton>
+ </div>
+</IonContent>
+</IonPage>
+);
 };
 
 export default Home;

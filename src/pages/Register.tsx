@@ -9,12 +9,11 @@ import {
     IonButton,
     IonCard,
     IonCardContent,
-    InputCustomEvent,
     IonLoading,
 } from "@ionic/react";
 
 import { Link, useHistory } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { registerUser } from "../firebaseConfig";
 import { useDispatch } from "react-redux";
 import { setShowRegisterToast } from "../redux/userSlice";
@@ -29,63 +28,69 @@ const Register: React.FC = () => {
     const [hover, setHover] = useState(false);
     const history = useHistory();  
     const dispatch = useDispatch();  
+    const emailRef = useRef<string>("");
+    const passwordRef = useRef<string>("");
+    const cpasswordRef = useRef<string>("");
 
-    async function register() {
-        setBusy(true);
-    
-        // ✅ Validate Passwords Match
-        if (password !== cpassword) {
-            toast.info("Passwords do not match", {
-                position: "top-center",
-                duration: 4000,
-            });
-            setBusy(false);
-            return;
-        }
-    
-        // ✅ Ensure Email & Password Are Not Empty
-        if (email.trim() === "" || password.trim() === "") {
-            toast.info("Email and password are required", {
-                position: "top-center",
-                duration: 4000,
-            });
-            setBusy(false);
-            return;
-        }
-    
-        // ✅ Ensure Password Length is at Least 6 Characters
-        if (password.length < 6) {
-            toast.info("Password must be at least 6 characters long", {
-                position: "top-center",
-                duration: 4000,
-            });
-            setBusy(false);
-            return;
-        }
-    
-        // ✅ Call Firebase to Register User
-        const res = await registerUser(email, password);
-    
-        if (res) {
-            console.log("✅ User registered successfully!");
-            dispatch(setShowRegisterToast(true)); // ✅ Set toast flag in Redux
-            history.replace("/home"); // ✅ Navigate to Home
-        } else {
-            // ✅ Handle Firebase Registration Errors
-            const registerError = localStorage.getItem("showRegisterErrorToast");
-            if (registerError) {
-                toast.error(registerError, {
-                    position: "top-center",
-                    duration: 4000,
-                });
-    
-                // ✅ Remove error after showing it
-                localStorage.removeItem("showRegisterErrorToast");
-            }
-        }
-    
+const register = async () => {
+    setBusy(true);
+
+    if (passwordRef.current !== cpasswordRef.current) {
+        toast.info("Passwords do not match", {
+            position: "top-center",
+            duration: 4000,
+        });
         setBusy(false);
+        return;
     }
+
+    if (emailRef.current.trim() === "" || passwordRef.current.trim() === "") {
+        toast.info("Email and password are required", {
+            position: "top-center",
+            duration: 4000,
+        });
+        setBusy(false);
+        return;
+    }
+
+    if (passwordRef.current.length < 6) {
+        toast.info("Password must be at least 6 characters long", {
+            position: "top-center",
+            duration: 4000,
+        });
+        setBusy(false);
+        return;
+    }
+
+    const res = await registerUser(emailRef.current, passwordRef.current);
+
+    if (res) {
+        dispatch(setShowRegisterToast(true));
+        history.replace("/home");
+
+        // ✅ Clear input fields after a delay
+        setTimeout(() => {
+            setEmail('');
+            setPassword('');
+            setCpassword('');
+            emailRef.current = "";
+            passwordRef.current = "";
+            cpasswordRef.current = "";
+        }, 600);
+
+    } else {
+        const registerError = localStorage.getItem("showRegisterErrorToast");
+        if (registerError) {
+            toast.error(registerError, {
+                position: "top-center",
+                duration: 4000,
+            });
+            localStorage.removeItem("showRegisterErrorToast");
+        }
+    }
+    setBusy(false);
+};
+
     
 
 
@@ -102,33 +107,44 @@ const Register: React.FC = () => {
                <IonCard style={{ backgroundColor: "#1e1e2f", marginTop:"30px" }}>
                    <IonCardContent>
                         <IonItem style={{ "--background": "#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
-                            <IonInput 
-                                type="email" 
-                                placeholder="Enter your email" 
-                                style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", "margin": "0" }}
-                                required 
-                                onIonChange={(e: InputCustomEvent) => setEmail(e.detail.value || '')}
-                            />
+                        <IonInput
+                            type="email"
+                            placeholder="Enter your email"
+                            style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", "margin": "0" }}
+                            required
+                            onIonChange={(e) => {
+                                emailRef.current = e.detail.value!.trim();
+                                setEmail(emailRef.current);
+                            }}
+                        />
+
                         </IonItem>
                         <br />
                         <IonItem style={{ "--background": "#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
-                            <IonInput 
-                                type="password" 
-                                placeholder="Create a password" 
-                                required 
-                                style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", "margin": "0" }}  
-                                onIonChange={(e: InputCustomEvent) => setPassword(e.detail.value || '')}
-                            />
+                        <IonInput
+                            type="password"
+                            placeholder="Create a password"
+                            required
+                            style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", "margin": "0" }}  
+                            onIonChange={(e) => {
+                                passwordRef.current = e.detail.value!.trim();
+                                setPassword(passwordRef.current);
+                            }}
+                        />
+
                         </IonItem>
                         <br />
                         <IonItem style={{"--background":"#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
-                            <IonInput 
-                                type="password" 
-                                placeholder="Confirm your password" 
-                                required 
-                                style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", margin:"0" }}  
-                                onIonChange={(e: InputCustomEvent) => setCpassword(e.detail.value || '')}
-                            />
+                        <IonInput
+                            type="password"
+                            placeholder="Confirm your password"
+                            required
+                            style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", "margin": "0" }}  
+                            onIonChange={(e) => {
+                                cpasswordRef.current = e.detail.value!.trim();
+                                setCpassword(cpasswordRef.current);
+                            }}
+                        />
                         </IonItem>
                         <br /> <br />
                         <IonButton expand="full" color="primary" onClick={register}>

@@ -9,14 +9,13 @@ import {
     IonButton,
     IonCard,
     IonCardContent,
-    InputCustomEvent,
     IonLoading,
   
   } from "@ionic/react";
 
 import { Link, useHistory } from "react-router-dom";
 import {loginUser} from '../firebaseConfig'
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { setUserState } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
 import { User } from 'firebase/auth'
@@ -33,39 +32,49 @@ import 'react-toastify/dist/ReactToastify.css'
     const dispatch = useDispatch();
     const history = useHistory();
     const [hover, setHover] = useState(false);
+    const emailRef = useRef<string>("");
+    const passwordRef = useRef<string>("");
 
+    
+const login = async () => {
+    setBusy(true);
+    try {
+        const user: User | null = await loginUser(emailRef.current, passwordRef.current);
+        setBusy(false);
 
-    async function login() {
-        setBusy(true);
-        try {
-            const user: User | null = await loginUser(email, password);
-            setBusy(false);
-    
-            if (!user || !user.email) {
-                const errorMessage = localStorage.getItem("showLoginErrorsToast");
-                if (errorMessage) {
-                    toast.error(errorMessage, {
-                        position: "top-center",
-                        duration: 4000,
-                    });
-    
-                    setTimeout(() => {
-                        localStorage.removeItem("showLoginErrorsToast"); // ✅ Remove error after timeout
-                    }, 4000);
-                }
-                return; // ✅ Prevents redirecting on failed login
+        if (!user || !user.email) {
+            const errorMessage = localStorage.getItem("showLoginErrorsToast");
+            if (errorMessage) {
+                toast.error(errorMessage, {
+                    position: "top-center",
+                    duration: 4000,
+                });
+
+                setTimeout(() => {
+                    localStorage.removeItem("showLoginErrorsToast");
+                }, 4000);
             }
-    
-            // ✅ Only proceed if the user is authenticated
-            dispatch(setUserState(user.email));
-            localStorage.setItem("showLoginToast", "true");
-            history.replace('/dashboard');
-    
-        } catch (error) {
-            console.error("Login error:", error);
-            setBusy(false);
+            return;
         }
+
+        dispatch(setUserState(user.email));
+        localStorage.setItem("showLoginToast", "true");
+        history.replace('/dashboard');
+
+        // ✅ Clear input fields after a delay
+        setTimeout(() => {
+            setEmail('');
+            setPassword('');
+            emailRef.current = "";
+            passwordRef.current = "";
+        }, 600);
+
+    } catch (error) {
+        console.error("Login error:", error);
+        setBusy(false);
     }
+};
+
     
 
     useEffect(() => {
@@ -102,17 +111,29 @@ import 'react-toastify/dist/ReactToastify.css'
                 <Toaster  richColors/>
                    <IonCardContent>
                        <IonItem style={{"--background":"#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
-                            <IonInput type="email" placeholder="Enter your email" 
-                            style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", margin:"0" }} required 
-                            onIonChange={(e: InputCustomEvent) => setEmail(e.detail.value || '')}
-                            />
+                       <IonInput
+                            type="email"
+                            placeholder="Enter your email"
+                            style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", margin: "0" }}
+                            required
+                            onIonChange={(e) => {
+                                emailRef.current = e.detail.value!.trim();
+                                setEmail(emailRef.current);
+                            }}
+                        />
                        </IonItem>
                        <br />
                        <IonItem style={{"--background":"#1e1e2f", borderBottom: "2px solid #A0C4FF" }}>
-                            <IonInput type="password" placeholder="Enter your password" required 
-                            style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", margin:"0" }}  
-                            onIonChange={(e: InputCustomEvent) => setPassword(e.detail.value || '')}
-                            />
+                       <IonInput
+                            type="password"
+                            placeholder="Enter your password"
+                            required
+                            style={{ "--placeholder-color": "#A0C4FF", "--color": "#A0C4FF", margin: "0" }}
+                            onIonChange={(e) => {
+                                passwordRef.current = e.detail.value!.trim();
+                                setPassword(passwordRef.current);
+                            }}
+                        />
                        </IonItem>
                        <br /> <br />
                        <IonButton expand="full" color="primary" onClick={login}>
