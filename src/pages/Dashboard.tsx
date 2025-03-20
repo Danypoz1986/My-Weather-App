@@ -210,37 +210,31 @@ if (searchType === "gps") {
 }, [history, searchType, dispatch]);
 
 useEffect(() => {
-const auth = getAuth();
-const unsubscribe = onAuthStateChanged(auth, (user) => {
-  if (user) {
-      setUserId(user.uid); // ✅ Set userId from Firebase
-  } else {
-      setUserId(null);
-  }
-});
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const lastActivity = localStorage.getItem("lastActivity");
+        const now = Date.now();
+        const timeoutLimit = 10 * 60 * 1000; // 10 minutes
 
-return () => unsubscribe(); // Cleanup listener
-}, []);
+        if (user) {
+            console.log("✅ User is authenticated:", user.uid);
+            setUserId(user.uid);
 
-useEffect(() => {
-setShowModal(false);
-}, [location] )
+            // 🔹 Check if inactivity timeout has passed while app was closed
+            if (lastActivity && now - parseInt(lastActivity, 10) > timeoutLimit) {
+                console.log("⏳ App reopened after timeout. Logging out...");
+                logout("auto");
+            }
+        } else {
+            console.log("❌ No user detected, logging out...");
+            setUserId(null);
+            logout("auto"); // Log out immediately if no user
+        }
+    });
 
-useEffect(() => {
-const auth = getAuth();
-const unsubscribe = onAuthStateChanged(auth, (user) => {
-   if (user) {
-       console.log("✅ User is authenticated:", user.uid);
-       setUserId(user.uid);
-   } else {
-       console.log("❌ No user detected, logging out...");
-       setUserId(null);
-       logout("auto"); // Log out immediately if no user
-   }
-});
-
-return () => unsubscribe();
+    return () => unsubscribe();
 }, [logout]);
+
 
 
 
