@@ -156,7 +156,7 @@ if (localStorage.getItem("showLoginToast") === "true") {
   setTimeout(() => {
       localStorage.removeItem("showLoginToast");
       toast.dismiss(loginToastId); // ✅ Force toast to disappear
-  }, 80);
+  }, 500);
 }
 }, []);
 
