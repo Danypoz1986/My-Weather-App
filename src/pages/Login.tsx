@@ -59,11 +59,12 @@ const login = async () => {
 
         dispatch(setUserState(user.email));
         localStorage.setItem("showLoginToast", "true");
-        history.push("/temp-route"); // Redirect to a temporary page
-        setTimeout(() => {
-            history.replace("/dashboard"); // Then go to Dashboard
-        }, 100);
         
+            history.replace("/dashboard"); // Then go to Dashboard
+            setTimeout(() => {
+            toast.success("porcodio", {position: "top-center", duration: 4000})
+        }, 300);
+
         // ✅ Clear input fields after a delay
         setTimeout(() => {
             setEmail('');

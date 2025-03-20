@@ -139,23 +139,6 @@ const getWeather = async (searchCity: string) => {
 
 
 
-useEffect(() => {
-
-if (localStorage.getItem("showLoginToast") === "true") {
-  const loginToastId = toast.success("You've logged in!", {
-      position: "top-center",
-      duration: 4000,
-  })
-
-  // ✅ Remove login toast flag after delay and dismiss toast
-  setTimeout(() => {
-      localStorage.removeItem("showLoginToast");
-      toast.dismiss(loginToastId); // ✅ Force toast to disappear
-  }, 50);
-}
-}, []);
-
-
 
 
 useEffect(() => {
