@@ -15,7 +15,7 @@ import { toast, Toaster } from 'sonner';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { clearLogoutMessage } from "../redux/authSlice";
+
 
 
 const Home: React.FC = () => {
@@ -23,7 +23,7 @@ const Home: React.FC = () => {
 const history = useHistory();
 const showRegisterToast = useSelector((state: RootState) => state.user.showRegisterToast);
 const dispatch = useDispatch();
-const logoutMessage = useSelector((state: RootState) => state.auth.logoutMessage);
+
 
 
 const toLogin = () => {
@@ -54,7 +54,7 @@ useEffect(() => {
   console.log(`🔄 Detected logoutType: ${logoutType}`);
 
   if (logoutType === "voluntary") {
-      toast.success("You've logged out successfully!", {
+      toast.success("You have logged out successfully!", {
           position: "top-center",
           duration: 4000,
           id: "logout-toast", // ✅ Prevent multiple toasts
