@@ -5,7 +5,7 @@ IonButton,
 IonPage, 
 IonTitle, 
 IonToolbar, 
-IonInput, 
+IonInput,
 IonLoading,
 IonIcon,
 IonRadioGroup,
@@ -95,52 +95,47 @@ if (userResponse){
 }
 
 const getWeather = async (searchCity: string) => {
-if (searchCity.trim() === '') {
-   toast.info("Please enter a city name before searching!", {
-       position: "top-center",
-       duration: 4000,
-   });
-   return;
-}
+    const trimmedCity = searchCity.trim(); // Ensure no extra spaces
+    if (!trimmedCity) {
+        toast.info("Please enter a city name before searching!", { position: "top-center", duration: 4000 });
+        return;
+    }
 
-try {
-   const res = await fetch(
-       `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&appid=${apiKey}&units=metric`
-   );
+    try {
+        console.log(`Fetching weather for: ${trimmedCity}`);
+        const res = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${trimmedCity}&appid=${apiKey}&units=metric`
+        );
 
-   if (!res.ok) throw new Error("Failed to fetch location data!");
+        if (!res.ok) throw new Error("Failed to fetch location data!");
 
-   const data = await res.json();
-   const country = data.sys?.country || "Unknown";
+        const data = await res.json();
+        const country = data.sys?.country || "Unknown";
 
-   if (userId) {
-       const userRef = doc(db, "userHistory", userId);
-       const userSnap = await getDoc(userRef);
+        if (userId) {
+            const userRef = doc(db, "userHistory", userId);
+            const userSnap = await getDoc(userRef);
 
-       const searchEntry = { city: searchCity, country, timestamp: Date.now() };
+            const searchEntry = { city: trimmedCity, country, timestamp: Date.now() };
 
-       if (userSnap.exists()) {
-           await updateDoc(userRef, {
-               searches: arrayUnion(searchEntry),
-           });
-       } else {
-           await setDoc(userRef, {
-               searches: [searchEntry],
-           });
-       }
+            if (userSnap.exists()) {
+                await updateDoc(userRef, { searches: arrayUnion(searchEntry) });
+            } else {
+                await setDoc(userRef, { searches: [searchEntry] });
+            }
 
-       dispatch(addToHistory(searchEntry)); // ✅ Update Redux instantly
-   }
+            dispatch(addToHistory(searchEntry));
+        }
 
-   history.push(`/results/${searchCity}`);
-} catch (error) {
-   console.error("Error fetching country:", error);
-   toast.error("Could not fetch weather data.", {
-       position: "top-center",
-       duration: 4000,
-   });
-}
+        toast.success(`Weather for ${trimmedCity} fetched successfully!`, { position: "top-center", duration: 4000 });
+        history.push(`/results/${trimmedCity}`);
+
+    } catch (error) {
+        console.error("Error fetching country:", error);
+        toast.error("Could not fetch weather data.", { position: "top-center", duration: 4000 });
+    }
 };
+
 
 
 
@@ -309,28 +304,30 @@ return (
           <IonItem style={{ width: "80%", maxWidth: "350px", "--background": "#1e1e2f", alignItems: "center", border: "2px solid #A0C4FF", borderRadius:"6px"  }}>
               <IonIcon icon={searchOutline} slot="start" style={{ color: "#A0C4FF", marginRight:"10px" }} />
               <IonInput 
-                  placeholder="Enter city name (e.g., Rome or Rome, IT)"
-                  style={{ color: "#A0C4FF", paddingLeft: "8px", textAlign:"left", fontSize:"15px" }}
-                  onIonChange={(e) => {
-                   cityRef.current = e.detail.value!.trim(); // ✅ Ensure updated instantly
-                   setCity(cityRef.current);  // ✅ Also update state for UI
-               }}
+                  value={city}  // ✅ Sync state to reflect input changes
+                  onIonInput={(e) => {
+                      const inputValue = e.detail.value?.trim() || "";
+                      setCity(inputValue);  // ✅ Update state for UI
+                      cityRef.current = inputValue;  // ✅ Ensure ref is up to date
+                  }}
+                  placeholder="Enter city name (e.g., Rome, IT)"
+                  style={{ color: "#A0C4FF", paddingLeft: "8px", textAlign: "left", fontSize: "15px" }}
               />
           </IonItem>
           <IonButton expand="block" style={{ marginTop: "20px", fontWeight:"bold", "--color":"#1e1e2f", "--border-radius":"6px" }} 
-           onClick={() => {
-               const searchCity = cityRef.current; // ✅ Get latest input value
-                   if (!searchCity) return; // ✅ Prevent empty searches
+           onClick={async () => {
+            const searchCity = cityRef.current.trim(); // ✅ Get latest input value
+    
+            
+            await getWeather(searchCity);  // ✅ Fetch weather first
+    
+        
+        }}
                    
-                   setTimeout(() => {
-                       getWeather(searchCity);  // ✅ Fetch weather after 300ms
-                   }, 300);
+                   
+                        
 
-                   setTimeout(() => {
-                       setCity('');  // ✅ Clear input field
-                       cityRef.current = '';  // ✅ Clear ref to prevent stale data
-                   }, 600);
-               }}
+               
            >
            Get Weather
            </IonButton>
