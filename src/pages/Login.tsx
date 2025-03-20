@@ -63,7 +63,7 @@ const login = async () => {
             history.replace("/dashboard"); // Then go to Dashboard
             setTimeout(() => {
             toast.success("porcodio", {position: "top-center", duration: 4000})
-        }, 500);
+        }, 300);
 
         // ✅ Clear input fields after a delay
         setTimeout(() => {
