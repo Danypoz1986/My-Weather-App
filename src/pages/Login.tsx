@@ -59,8 +59,11 @@ const login = async () => {
 
         dispatch(setUserState(user.email));
         localStorage.setItem("showLoginToast", "true");
-        history.replace('/dashboard');
-
+        history.push("/temp-route"); // Redirect to a temporary page
+        setTimeout(() => {
+            history.replace("/dashboard"); // Then go to Dashboard
+        }, 100);
+        
         // ✅ Clear input fields after a delay
         setTimeout(() => {
             setEmail('');
