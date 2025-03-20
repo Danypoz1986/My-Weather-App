@@ -177,7 +177,7 @@ useEffect(() => {
                     console.log("🚪 Auto-logout due to inactivity.");
                     logout("auto"); 
                 }
-            },  0.2 /* minutes */ * 60 * 1000 ); // 10 minutes
+            },  10 /* minutes */ * 60 * 1000 ); // 10 minutes
         }
     };
 
