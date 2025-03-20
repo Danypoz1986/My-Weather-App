@@ -156,7 +156,7 @@ useEffect(() => {
                     console.log("🚪 Auto-logout due to inactivity.");
                     logout("auto"); 
                 }
-            }, 10 /* <-- minutes */  * 60 * 1000); 
+            }, 1 /* <-- minutes */  * 60 * 1000); 
         }
     };
 
@@ -214,7 +214,7 @@ useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
         const lastActivity = localStorage.getItem("lastActivity");
         const now = Date.now();
-        const timeoutLimit = 10 * 60 * 1000; // 10 minutes
+        const timeoutLimit = 1 /* <-- minutes */ * 60 * 1000; // 10 minutes
 
         if (user) {
             console.log("✅ User is authenticated:", user.uid);
