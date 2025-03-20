@@ -81,12 +81,21 @@ if (userResponse){
   await deleteUserData(userId); 
   await deleteCurrentUser(); 
   history.replace("/");
+  setTimeout(() => {
+    toast.success("Your account has been successfully deleted!")
+  },100);
   }catch (error){
       if(error instanceof Error){
-      //toast error
+      toast.error(error.message, {
+        position: "top-center",
+        duration: 4000
+      })
       }else 
       {
-          //toast error
+        toast.error("An unknown error has occurred ", {
+            position: "top-center",
+            duration: 4000
+          })
       }
 
 }
