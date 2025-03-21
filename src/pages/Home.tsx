@@ -8,22 +8,20 @@ import { IonContent,
 
 
 import { cloud } from 'ionicons/icons'
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { useEffect } from 'react';
-import { setShowRegisterToast } from '../redux/userSlice';
 import { toast, Toaster } from 'sonner';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
 
 
 
 const Home: React.FC = () => {
 
-const history = useHistory();
-const showRegisterToast = useSelector((state: RootState) => state.user.showRegisterToast);
-const dispatch = useDispatch();
+  interface LocationState {
+    logoutType?: string;
+  }
 
+const history = useHistory();
+const location = useLocation<LocationState>();
 
 
 const toLogin = () => {
@@ -36,41 +34,33 @@ history.push('/register');
 
 
 useEffect(() => {
-if (showRegisterToast) {
- toast.success("You have registered successfully!", {
-   position: "top-center",
-   duration: 4000,
- })
-     dispatch(setShowRegisterToast(false)); // ✅ Reset Redux state
-}
-}, [showRegisterToast, dispatch]);
+  const logoutType = location.state?.logoutType || localStorage.getItem("logoutType");
 
-
-useEffect(() => {
-  const logoutType = localStorage.getItem("logoutType");
-
-  if (!logoutType) return; // ✅ No logoutType, no toast
+  if (!logoutType || history.location.pathname !== '/') return;
 
   console.log(`🔄 Detected logoutType: ${logoutType}`);
 
-  if (logoutType === "voluntary") {
-      toast.success("You have logged out successfully!", {
-          position: "top-center",
-          duration: 4000,
-          id: "logout-toast", // ✅ Prevent multiple toasts
+  if (logoutType === "manual") {
+    setTimeout(() => {
+      toast.success("You've logged out successfully!", {
+        position: "top-center",
+        duration: 4000,
       });
+    }, 300);
   } else if (logoutType === "auto") {
-      toast.info("Session expired due to inactivity. You have been logged out!", {
-          position: "top-center",
-          duration: 4000,
-          id: "logout-toast", // ✅ Prevent multiple toasts
-      });
+    toast.info("Session expired due to inactivity. You have been logged out!", {
+      position: "top-center",
+      duration: 4000,
+    });
   }
 
-  // ✅ Remove logoutType *immediately* after toast is set
-  localStorage.removeItem("logoutType");
+  setTimeout(() => {
+    localStorage.removeItem("logoutType");
+  }, 100);
+}, [location.state, history.location.pathname]);
 
-}, [history.location.state]); // ✅ Uses `history.location.state` to trigger only when needed
+
+
 
 
 
@@ -88,7 +78,7 @@ return (
 <IonContent fullscreen>
  <div style={{marginTop:"150px", textAlign:"center"}}>
    <IonButton onClick={toLogin}><b style={{color:"#1e1e2f"}}>LOGIN</b></IonButton>
-   <p style={{color:"#A0C4FF"}}>OR</p>
+   <p style={{color:"#A0C4FF"}}><b>OR</b></p>
    <IonButton color="secondary" onClick={toRegister}><b style={{color:"#1e1e2f"}}>Register</b></IonButton>
  </div>
 </IonContent>

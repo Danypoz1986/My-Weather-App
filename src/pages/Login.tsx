@@ -35,50 +35,59 @@ import 'react-toastify/dist/ReactToastify.css'
     const emailRef = useRef<string>("");
     const passwordRef = useRef<string>("");
 
-    
-const login = async () => {
-    setBusy(true);
-    try {
-        const user: User | null = await loginUser(emailRef.current, passwordRef.current);
-        setBusy(false);
+    localStorage.removeItem("logoutType");
 
-        if (!user || !user.email) {
-            const errorMessage = localStorage.getItem("showLoginErrorsToast");
-            if (errorMessage) {
-                toast.error(errorMessage, {
-                    position: "top-center",
-                    duration: 4000,
-                });
-
-                setTimeout(() => {
-                    localStorage.removeItem("showLoginErrorsToast");
-                }, 4000);
-            }
-            return;
-        }
-
-        dispatch(setUserState(user.email));
-        localStorage.setItem("showLoginToast", "true");
+    const login = async () => {
         
-            history.replace("/dashboard"); // Then go to Dashboard
+        setBusy(true);
+        try {
+            // ✅ Clear logout flag before logging in
+           
+    
+            const user: User | null = await loginUser(emailRef.current, passwordRef.current);
+            setBusy(false);
+    
+            if (!user || !user.email) {
+                const errorMessage = localStorage.getItem("showLoginErrorsToast");
+                if (errorMessage) {
+                    toast.error(errorMessage, {
+                        position: "top-center",
+                        duration: 4000,
+                    });
+    
+                    setTimeout(() => {
+                        localStorage.removeItem("showLoginErrorsToast");
+                    }, 500);
+                }
+                return;
+            }
+    
+            dispatch(setUserState(user.email));
+            localStorage.setItem("showLoginToast", "true");
+            localStorage.setItem("lastLogin", Date.now().toString()); // ✅ Store last login timestamp
+            
+                history.replace("/dashboard"); 
+            
             setTimeout(() => {
-            toast.success("You have successfully logged in", {position: "top-center", duration: 4000})
-        }, 100);
-
-        // ✅ Clear input fields after a delay
-        setTimeout(() => {
-            setEmail('');
-            setPassword('');
-            emailRef.current = "";
-            passwordRef.current = "";
-        }, 600);
-
-    } catch (error) {
-        console.error("Login error:", error);
-        setBusy(false);
-    }
-};
-
+                toast.success("You have successfully logged in", { position: "top-center", duration: 2000 });
+    
+                
+                }, 100);
+    
+            // ✅ Clear input fields after login
+            setTimeout(() => {
+                setEmail('');
+                setPassword('');
+                emailRef.current = "";
+                passwordRef.current = "";
+            }, 600);
+    
+        } catch (error) {
+            console.error("Login error:", error);
+            setBusy(false);
+        }
+    };
+    
     
 
     useEffect(() => {
@@ -141,7 +150,7 @@ const login = async () => {
                        </IonItem>
                        <br /> <br />
                        <IonButton expand="full" color="primary" onClick={login}>
-                        <p style={{color:"#1e1e2f"}}>LOGIN</p></IonButton>
+                        <p style={{color:"#1e1e2f"}}><b>LOGIN</b></p></IonButton>
                        <br />
                        <p style={{textAlign:"center"}}>Don't have an account yet?&nbsp; &nbsp;<Link to = "/register">Register Now!</Link></p>
                        <p style={{textAlign:"center", marginTop:"50px"}}><Link to = "/Home" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} 

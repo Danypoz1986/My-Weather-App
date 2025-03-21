@@ -67,6 +67,13 @@ const register = async () => {
     if (res) {
         dispatch(setShowRegisterToast(true));
         history.replace("/home");
+        setTimeout(() => {
+            toast.success("You have successfully registered!", {
+                position: "top-center",
+                duration: 4000
+            })    
+        }, 100);
+        
 
         // ✅ Clear input fields after a delay
         setTimeout(() => {
@@ -148,7 +155,7 @@ const register = async () => {
                         </IonItem>
                         <br /> <br />
                         <IonButton expand="full" color="primary" onClick={register}>
-                            <p style={{color:"#1e1e2f"}}>REGISTER</p>
+                            <p style={{color:"#1e1e2f"}}><b>REGISTER</b></p>
                         </IonButton>
                         <br />
                         <p style={{textAlign:"center"}}>Already have an account? &nbsp;<Link to='/login'>LOGIN</Link></p>
