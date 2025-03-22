@@ -138,7 +138,7 @@ import {
                     history.replace("/");
     
                     setTimeout(() => {
-                        toast.success(user?.email?.split("@")[0] + " deleted successfully!", {
+                        toast.success("User '" + user?.email?.split("@")[0] + "' deleted successfully!", {
                             position: "top-center",
                             duration: 4000
                         });
