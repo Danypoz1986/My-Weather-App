@@ -33,31 +33,6 @@ history.push('/register');
 }
 
 
-useEffect(() => {
-  const logoutType = location.state?.logoutType || localStorage.getItem("logoutType");
-
-  if (!logoutType || history.location.pathname !== '/') return;
-
-  console.log(`🔄 Detected logoutType: ${logoutType}`);
-
-  if (logoutType === "manual") {
-    setTimeout(() => {
-      toast.success("You've logged out successfully!", {
-        position: "top-center",
-        duration: 4000,
-      });
-    }, 300);
-  } else if (logoutType === "auto") {
-    toast.info("Session expired due to inactivity. You have been logged out!", {
-      position: "top-center",
-      duration: 4000,
-    });
-  }
-
-  setTimeout(() => {
-    localStorage.removeItem("logoutType");
-  }, 100);
-}, [location.state, history.location.pathname]);
 
 
 

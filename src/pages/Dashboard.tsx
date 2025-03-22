@@ -52,44 +52,47 @@ import {
     
 
     const logout = useCallback(async () => {
+        if(localStorage.getItem("userDeleted")){
+            return
+        }
         console.log(`🔹 Logging out user`);
     
-        // ✅ Detect if logout is manual or auto
-        const logoutType = localStorage.getItem("logoutType") || "manual"; // Default to manual logout
-    
+        const logoutType = localStorage.getItem("logoutType") || "manual"; // ✅ Default to manual logout
+        
         if (logoutType === "manual") {
             localStorage.setItem("manualLogout", "true"); // ✅ Only set for manual logouts
         }
-        
+    
         localStorage.removeItem("lastActivity");
     
         setBusyLoggingOut(true);
         await logoutUser(dispatch);
         setBusyLoggingOut(false);
-        history.push('/');
+    
+        // ✅ Redirect to login after logout and clear history
+        history.replace("/"); // Prevents back navigation
+        
     
         setTimeout(() => {
-        // ✅ Show correct toast based on logout type
-        if (logoutType === "manual") {
-            
-            toast.success("You have logged out successfully!", {
-                position: "top-center",
-                duration: 4000
-            });
-        
-        } else if (logoutType === "auto") {
-            toast.info("Session expired due to inactivity. You have been logged out!", {
-                position: "top-center",
-                duration: 4000
-            });
-        }
+            // ✅ Show correct toast based on logout type
+            toast[logoutType === "manual" ? "success" : "info"](
+                logoutType === "manual"
+                    ? "You have logged out successfully!"
+                    : "Session expired due to inactivity. You have been logged out!",
+                {
+                    position: "top-center",
+                    duration: 4000,
+                    id: "logout-toast", // ✅ Prevent duplicate toasts
+                }
+            );
         }, 100);
-        // ✅ Ensure manual logout flag is only kept temporarily
+    
+        // ✅ Ensure logout flags are removed properly
         setTimeout(() => {
-            localStorage.removeItem("manualLogout");
-            localStorage.removeItem("logoutType"); // Cleanup logout type
+            ["manualLogout", "logoutType", "logoutInProgress"].forEach((item) => localStorage.removeItem(item));
         }, 500);
     }, [history, dispatch]);
+    
     
     
     
@@ -201,7 +204,10 @@ import {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (localStorage.getItem("userDeleted")) {
                 console.log("🚨 User was deleted, preventing auto logout");
-                localStorage.removeItem("userDeleted");
+                setTimeout(() => {
+                    localStorage.removeItem("userDeleted");   
+                }, 500);
+                
                 return;
             }
     
@@ -222,51 +228,52 @@ import {
     
     useEffect(() => {
         let inactivityTimer: NodeJS.Timeout;
-      
+    
         const resetTimer = () => {
-          if (userId) {
-            clearTimeout(inactivityTimer);
-            localStorage.setItem("lastActivity", Date.now().toString());
-      
-            inactivityTimer = setTimeout(() => {
-              if (!localStorage.getItem("manualLogout") && !localStorage.getItem("logoutInProgress")) {
-                console.log("🚪 Auto-logout triggered due to inactivity.");
-                localStorage.setItem("logoutType", "auto");
-                localStorage.setItem("logoutInProgress", "true");
-                logout();
-              }
-            }, 1 * 60 * 1000); // ⏲️ 10 minutes
-          }
+            if (userId) {
+                clearTimeout(inactivityTimer);
+                localStorage.setItem("lastActivity", Date.now().toString());
+    
+                inactivityTimer = setTimeout(() => {
+                    if (!localStorage.getItem("manualLogout") && !localStorage.getItem("logoutInProgress")) {
+                        console.log("🚪 Auto-logout triggered due to inactivity.");
+                        localStorage.setItem("logoutType", "auto");
+                        localStorage.setItem("logoutInProgress", "true");
+                        logout();
+                    }
+                }, 10 /* <--minutes */ * 60 * 1000); // ⏲️ 10 minutes timeout
+            }
         };
-      
+    
         // ✅ Detect inactivity even after app reload
         const lastActivity = localStorage.getItem("lastActivity");
         const now = Date.now();
-        const timeoutLimit = 1 * 60 * 1000;
-      
+        const timeoutLimit = 10 /* <--minutes */ * 60 * 1000; // 10 minutes
+    
         if (
-          userId &&
-          lastActivity &&
-          now - parseInt(lastActivity, 10) > timeoutLimit &&
-          !localStorage.getItem("manualLogout") &&
-          !localStorage.getItem("logoutInProgress")
+            userId &&
+            lastActivity &&
+            now - parseInt(lastActivity, 10) > timeoutLimit &&
+            !localStorage.getItem("manualLogout") &&
+            !localStorage.getItem("logoutInProgress")
         ) {
-          console.log("🚪 Reopened after being inactive. Logging out...");
-          localStorage.setItem("logoutType", "auto");
-          localStorage.setItem("logoutInProgress", "true");
-          logout();
+            console.log("🚪 Reopened after being inactive. Logging out...");
+            localStorage.setItem("logoutType", "auto");
+            localStorage.setItem("logoutInProgress", "true");
+            logout();
         }
-      
+    
         resetTimer();
-      
+    
         const events = ["mousemove", "keydown", "touchstart"];
         events.forEach((event) => window.addEventListener(event, resetTimer));
-      
+    
         return () => {
-          clearTimeout(inactivityTimer);
-          events.forEach((event) => window.removeEventListener(event, resetTimer));
+            clearTimeout(inactivityTimer);
+            events.forEach((event) => window.removeEventListener(event, resetTimer));
         };
-      }, [userId, logout]);
+    }, [userId, logout]);
+    
       
     
 
@@ -309,6 +316,7 @@ import {
       );
     }
     }, [history, searchType, dispatch]);
+
     
     useEffect(() => {
     const auth = getAuth();
@@ -322,6 +330,7 @@ import {
     
     return () => unsubscribe(); // Cleanup listener
     }, []);
+
     
     useEffect(() => {
     setShowModal(false);
@@ -330,7 +339,7 @@ import {
     useEffect(() => {
         const auth = getAuth();
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (localStorage.getItem("userDeleted")) {
+            if (localStorage.getItem("userDeleted") === "true") {
                 console.log("🚨 User was deleted, preventing auto logout");
                 localStorage.removeItem("userDeleted");
                 return;
@@ -369,6 +378,18 @@ import {
     }, [logout]);
     
       
+    useEffect(() => {
+        const disableBack = () => {
+            window.history.pushState(null, '', window.location.href);
+        };
+    
+        window.history.pushState(null, '', window.location.href);
+        window.addEventListener('popstate', disableBack);
+    
+        return () => {
+            window.removeEventListener('popstate', disableBack);
+        };
+    }, []);
     
     
     
