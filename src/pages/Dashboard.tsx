@@ -64,10 +64,11 @@ import {
         }
     
         localStorage.removeItem("lastActivity");
-    
+        
+        try{
         setBusyLoggingOut(true);
         await logoutUser(dispatch);
-        setBusyLoggingOut(false);
+       
     
         // ✅ Redirect to login after logout and clear history
         history.replace("/"); // Prevents back navigation
@@ -86,6 +87,21 @@ import {
                 }
             );
         }, 100);
+        }catch(e){
+            if(e instanceof Error){
+                toast.error(e.message,{
+                    position: 'top-center',
+                    duration: 4000
+                })
+            }else{
+                toast.error("We couldn’t log you out. Please try again.", {
+                    position: 'top-center',
+                    duration: 4000
+                })
+            }
+            }finally{
+                setBusyLoggingOut(false);
+            }
     
         // ✅ Ensure logout flags are removed properly
         setTimeout(() => {
