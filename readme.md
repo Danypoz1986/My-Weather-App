@@ -109,6 +109,7 @@ https://openweathermap.org/
     ionic serve
    ```  
 The app will be available at `http://localhost:8100`
+
 <br>
 
 ## 🌐 Live Demo
