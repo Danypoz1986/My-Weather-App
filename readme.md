@@ -10,6 +10,8 @@ The app leverages **Firebase Authentication** and **Firestore** to securely mana
 <br>
 Author: **Daniel Pozzoli**
 
+---
+
 <br>
 <br>
 
