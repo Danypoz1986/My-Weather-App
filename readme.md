@@ -5,9 +5,9 @@ Users can **register**, **log in**, check **real-time weather** by **city** or u
 The app leverages **Firebase Authentication** and **Firestore** to securely manage user data, and offers a clean and interactive UI powered by **React**, **Redux**, and **Toastify** notifications.
 
 > 📱 **Second school Ionic project** — focused on mobile development, Firebase integration, and state management with Redux.
->
->
->
+><br>
+><br>
+><br>
 >Author: **Daniel Pozzoli**
 
 ---
