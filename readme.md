@@ -11,6 +11,7 @@ The app leverages **Firebase Authentication** and **Firestore** to securely mana
 Author: **Daniel Pozzoli**
 
 <br>
+<br>
 
 ## Table of Contents
 - [Table of Contents](#table-of-contents)
