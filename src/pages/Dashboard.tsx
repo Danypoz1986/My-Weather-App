@@ -26,7 +26,7 @@ import {
     import { doc, setDoc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
     import { addToHistory } from '../redux/historySlice';
     import { getAuth, onAuthStateChanged } from "firebase/auth";
-    import { toast, Toaster } from 'sonner';
+    import { toastToaster } from 'sonner';
     
     const apiKey = import.meta.env.VITE_WEATHER_API_KEY
     
