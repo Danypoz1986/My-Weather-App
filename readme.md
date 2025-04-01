@@ -118,11 +118,10 @@ https://my-firebase-weather-app.netlify.app/home
 <br>
 
 ## 🧪 Test User Credentials
-You can test the app with:
-```bash
-    Email: testuser@example.com
-    Password: 123456
-``` 
+You can test the app using any valid credentials that meet the following criteria:
+
+- **Email:** Must follow the pattern `name@domain.extension` (e.g., `user@example.com`)
+- **Password:** Minimum 6 characters
 
 <br>
 
