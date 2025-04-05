@@ -118,10 +118,14 @@ https://my-firebase-weather-app.netlify.app/home
 <br>
 
 ## 🧪 Test User Credentials
-You can test the app using any valid credentials that meet the following criteria:
+Before logging in, you must register using any valid credentials that meet the following criteria:
 
 - **Email:** Must follow the pattern `name@domain.extension` (e.g., `user@example.com`)
+    <br>➤ **Note:** You can use any email format – even non-existing email addresses will work
+
 - **Password:** Minimum 6 characters
+
+Once registered, you can use those credentials to log in and test the app.
 
 <br>
 
