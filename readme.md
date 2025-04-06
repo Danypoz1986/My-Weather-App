@@ -51,9 +51,9 @@ The app leverages **Firebase Authentication** and **Firestore** to securely mana
 
 ## Screenshots
 ### Registering:
-| Step 1: Fill in the registration form | Step 2: Confirmation and navigation <br> to homepage |
+| Step 1: Fill in the registration form | Step 2: Successful registration and homepage access |
 |:--:|:--:|
-| <img src="./Registering-1.png" alt="Fill in the registration form" height="300px"> | <img src="./Registering-2.png" alt="Confirmation and navigation to homepage" height="300px"> |
+| <img src="./Registering-1.png" alt="Fill in the registration form" height="300px"> | <img src="./Registering-2.png" alt="Successful registration and homepage access" height="300px"> |
 
 <br>
 
