@@ -19,6 +19,8 @@ The app leverages **Firebase Authentication** and **Firestore** to securely mana
 - [Table of Contents](#table-of-contents)
 - [🚀 Features](#-features)
 - [Screenshots](#screenshots)
+  - [Registering:](#registering)
+  - [Logging in:](#logging-in)
   - [Searching city by name:](#searching-city-by-name)
   - [The app allows getting weather info by using GPS coordinates:](#the-app-allows-getting-weather-info-by-using-gps-coordinates)
 - [Tech Stack](#tech-stack)
@@ -48,6 +50,20 @@ The app leverages **Firebase Authentication** and **Firestore** to securely mana
 <br>
 
 ## Screenshots
+### Registering:
+| Step 1: Fill in the registration form | Step 2: Confirmation and navigation <br> to homepage |
+|:--:|:--:|
+| <img src="./Registering-1.png" alt="Fill in the registration form" height="300px"> | <img src="./Registering-2.png" alt="Confirmation and navigation to homepage" height="300px"> |
+
+<br>
+
+### Logging in:
+| Step 1: Enter your login credentials | Step 2: Access the weather search page |
+|:--:|:--:|
+| <img src="./LoggingIn-1.png" alt="Enter your login credentials" height="300px"> | <img src="./LoggingIn-2.png" alt="Access the weather search page" height="300px"> |
+
+<br>
+
 ### Searching city by name:
 | Step 1: Entering City | Step 2: Results Page |
 |:--:|:--:|
@@ -58,7 +74,7 @@ The app leverages **Firebase Authentication** and **Firestore** to securely mana
 ### The app allows getting weather info by using GPS coordinates:
 | Step 1: Selecting gps | Step 2: Results Page |
 |:--:|:--:|
-| <img src="./gps-search.png" alt="Entering City" height="300px"> | <img src="./gps-result.png" alt="Results Page" height="300px"> |
+| <img src="./gps-search.png" alt="Selecting gps" height="300px"> | <img src="./gps-result.png" alt="Results Page" height="300px"> |
 
 <br>
 
